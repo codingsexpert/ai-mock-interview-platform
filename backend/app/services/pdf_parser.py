@@ -69,3 +69,4 @@ def extract_text_from_pdf(file_bytes: bytes, filename: str) -> ResumeParseRespon
         raise
     except Exception as exc:
         raise PDFParsingError(f"Failed to process PDF: {str(exc)}") from exc
+

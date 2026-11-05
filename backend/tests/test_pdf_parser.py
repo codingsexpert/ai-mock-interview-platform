@@ -80,3 +80,4 @@ def test_successful_pdf_text_extraction():
     assert "FastAPI" in data["extracted_text"]
     assert data["word_count"] >= 5
     assert data["character_count"] > 10
+
