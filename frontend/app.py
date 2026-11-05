@@ -11,16 +11,16 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Minimal Custom CSS for dark monochrome aesthetic
+# Minimal Custom CSS for crisp modern light aesthetic
 st.markdown(
     """
     <style>
     .block-container { padding-top: 2rem; padding-bottom: 2rem; max-width: 1200px; }
-    h1, h2, h3 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 600; letter-spacing: -0.02em; }
-    .status-badge { display: inline-block; padding: 2px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; border: 1px solid #27272a; background-color: #18181b; color: #a1a1aa; }
-    .card-box { background-color: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
-    .metric-value { font-size: 1.75rem; font-weight: 700; color: #f4f4f5; }
-    .metric-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #71717a; margin-bottom: 0.25rem; }
+    h1, h2, h3 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 600; letter-spacing: -0.02em; color: #0f172a; }
+    .status-badge { display: inline-block; padding: 2px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; border: 1px solid #e2e8f0; background-color: #f8fafc; color: #475569; }
+    .card-box { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+    .metric-value { font-size: 1.75rem; font-weight: 700; color: #0f172a; }
+    .metric-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0.25rem; }
     </style>
     """,
     unsafe_allow_html=True,
