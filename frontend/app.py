@@ -54,6 +54,10 @@ if "conversation_history" not in st.session_state:
     st.session_state.conversation_history = []
 if "is_interview_completed" not in st.session_state:
     st.session_state.is_interview_completed = False
+if "current_audio_bytes" not in st.session_state:
+    st.session_state.current_audio_bytes = None
+if "last_voiced_question" not in st.session_state:
+    st.session_state.last_voiced_question = None
 
 # Header Bar
 is_healthy, _ = check_backend_health()
@@ -272,6 +276,25 @@ elif st.session_state.app_mode == "interview":
     st.markdown('<div class="metric-label">Active Interviewer Question</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="question-box">{current_question}</div>', unsafe_allow_html=True)
 
+    # Voice Playback for Question
+    if st.session_state.last_voiced_question != current_question:
+        try:
+            voice_res = requests.post(
+                f"{BACKEND_API_BASE}/api/v1/voice/synthesize",
+                json={"text": current_question},
+                timeout=10,
+            )
+            if voice_res.status_code == 200:
+                st.session_state.current_audio_bytes = voice_res.content
+                st.session_state.last_voiced_question = current_question
+        except Exception:
+            pass
+
+    if st.session_state.current_audio_bytes:
+        col_audio, _ = st.columns([2, 3])
+        with col_audio:
+            st.audio(st.session_state.current_audio_bytes, format="audio/mp3", autoplay=True)
+
     # Candidate Answer Submission Area
     if not st.session_state.is_interview_completed:
         st.markdown("#### Candidate Response")
@@ -398,9 +421,31 @@ elif st.session_state.app_mode == "report":
     else:
         st.info("No completed evaluations recorded for this session.")
 
-    if st.button("Start New Interview Session", type="primary"):
-        st.session_state.app_mode = "setup"
-        st.session_state.active_session = None
-        st.session_state.conversation_history = []
-        st.session_state.is_interview_completed = False
-        st.rerun()
+    col_dl, col_new = st.columns([1, 1], gap="medium")
+    with col_dl:
+        try:
+            pdf_res = requests.get(
+                f"{BACKEND_API_BASE}/api/v1/interview/session/{session['session_id']}/report.pdf",
+                timeout=10,
+            )
+            if pdf_res.status_code == 200:
+                st.download_button(
+                    label="Download Official Assessment PDF",
+                    data=pdf_res.content,
+                    file_name=f"Assessment_Report_{session['session_id'][:8]}.pdf",
+                    mime="application/pdf",
+                    type="secondary",
+                    use_container_width=True,
+                )
+        except Exception:
+            pass
+
+    with col_new:
+        if st.button("Start New Interview Session", type="primary", use_container_width=True):
+            st.session_state.app_mode = "setup"
+            st.session_state.active_session = None
+            st.session_state.conversation_history = []
+            st.session_state.is_interview_completed = False
+            st.session_state.current_audio_bytes = None
+            st.session_state.last_voiced_question = None
+            st.rerun()

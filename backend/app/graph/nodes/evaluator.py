@@ -114,3 +114,4 @@ Return JSON with exact keys:
     except Exception as exc:
         logger.warning("LLM evaluation call failed: %s. Using heuristic evaluation.", exc)
         return _deterministic_evaluation(turn_index, question, candidate_answer)
+

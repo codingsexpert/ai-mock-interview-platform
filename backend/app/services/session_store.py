@@ -54,3 +54,4 @@ class SessionStore:
 
 # Global singleton instance
 session_store = SessionStore()
+

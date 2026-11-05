@@ -37,3 +37,4 @@ class TurnResponse(BaseModel):
     current_phase: str = Field(..., description="Current interview phase")
     interviewer_question: str = Field(..., description="Next question or closing statement")
     is_completed: bool = Field(..., description="True if interview session has concluded")
+

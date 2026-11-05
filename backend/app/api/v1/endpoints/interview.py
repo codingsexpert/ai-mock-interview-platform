@@ -1,6 +1,6 @@
 """API routes for interview planning and session orchestration."""
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Response, status
 from backend.app.graph.nodes.evaluator import evaluate_turn
 from backend.app.graph.nodes.interviewer import generate_interviewer_turn, PHASE_TRANSITIONS
 from backend.app.graph.nodes.planner import plan_interview
@@ -11,6 +11,7 @@ from backend.app.schemas.session import (
     TurnRequest,
     TurnResponse,
 )
+from backend.app.services.report_generator import generate_pdf_report
 from backend.app.services.session_store import session_store
 
 router = APIRouter(prefix="/interview", tags=["Interview"])
@@ -160,3 +161,34 @@ async def get_session_state(session_id: str):
             detail=f"Session with ID '{session_id}' not found.",
         )
     return state
+
+
+@router.get(
+    "/session/{session_id}/report.pdf",
+    status_code=status.HTTP_200_OK,
+    summary="Download Assessment Audit PDF Report",
+)
+async def download_pdf_report(session_id: str):
+    """Generate and return binary PDF report for an interview session."""
+    state = session_store.get_session(session_id)
+    if not state:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session with ID '{session_id}' not found.",
+        )
+    try:
+        pdf_bytes = generate_pdf_report(
+            session_id=session_id,
+            target_role=state["target_role"],
+            evaluations=state.get("evaluations", []),
+        )
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=assessment_{session_id[:8]}.pdf"},
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate PDF report: {str(exc)}",
+        ) from exc

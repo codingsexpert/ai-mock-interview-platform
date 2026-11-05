@@ -96,3 +96,4 @@ Remember: 1 to 2 sentences maximum. Professional, natural, direct. No emojis.
     except Exception as exc:
         logger.warning("LLM interviewer generation failed: %s. Using deterministic fallback.", exc)
         return _deterministic_interviewer_turn(next_turn_index)
+
