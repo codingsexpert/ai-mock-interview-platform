@@ -50,3 +50,4 @@ def test_interview_plan_generation_success():
     assert any("Stage 1" in s for s in data["question_syllabus"])
     assert any("Stage 2" in s for s in data["question_syllabus"])
     assert any("Stage 5" in s for s in data["question_syllabus"])
+

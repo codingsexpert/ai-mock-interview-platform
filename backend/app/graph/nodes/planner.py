@@ -121,3 +121,4 @@ Return JSON with exact keys:
     except Exception as exc:
         logger.warning("LLM planning call failed: %s. Falling back to deterministic planner.", exc)
         return _generate_deterministic_fallback(resume_text, job_description, target_role)
+

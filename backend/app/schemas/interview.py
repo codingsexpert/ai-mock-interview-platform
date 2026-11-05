@@ -28,3 +28,4 @@ class InterviewPlanResponse(BaseModel):
     candidate_strengths: List[str] = Field(..., description="High-confidence skills identified in resume")
     gap_analysis: GapAnalysis = Field(..., description="Gap breakdown against JD")
     question_syllabus: List[str] = Field(..., description="5 progressive interview stage objectives")
+

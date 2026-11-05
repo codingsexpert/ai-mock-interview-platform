@@ -27,3 +27,4 @@ async def create_interview_plan(request: InterviewPlanRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate interview plan: {str(error)}",
         ) from error
+

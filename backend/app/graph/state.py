@@ -44,3 +44,4 @@ class InterviewState(TypedDict):
     messages: List[InterviewMessage]
     evaluations: List[TurnEvaluation]
     final_scorecard: Optional[Dict[str, Any]]
+
