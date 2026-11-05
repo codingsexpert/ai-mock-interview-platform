@@ -1,6 +1,7 @@
 """FastAPI application entrypoint for Mock Interview Platform."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.app.api.v1 import api_v1_router
 from backend.app.core.config import get_settings
 
 settings = get_settings()
@@ -20,6 +21,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register Version 1 API routes
+app.include_router(api_v1_router)
 
 
 @app.get("/api/health", tags=["System"])

@@ -14,3 +14,4 @@ def test_health_check_returns_200():
     assert "app_name" in data
     assert "environment" in data
     assert data["version"] == "1.0.0"
+
