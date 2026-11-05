@@ -75,3 +75,4 @@ def synthesize_speech(text: str) -> bytes:
             logger.warning("Sarvam API synthesis failed: %s. Using local synthesis.", err)
 
     return synthesize_speech_offline(cleaned_text)
+

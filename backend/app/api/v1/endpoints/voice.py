@@ -37,3 +37,4 @@ async def synthesize_voice_endpoint(request: VoiceSynthesisRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Speech synthesis failed: {str(exc)}",
         ) from exc
+

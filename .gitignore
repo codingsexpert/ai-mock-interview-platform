@@ -44,5 +44,8 @@ Thumbs.db
 *.mp3
 *.webm
 *.ogg
+*.db
+*.sqlite
+*.sqlite3
 tmp/
 temp/

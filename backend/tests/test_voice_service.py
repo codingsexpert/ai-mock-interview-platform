@@ -19,3 +19,4 @@ def test_successful_speech_synthesis():
     assert response.status_code == 200
     assert response.headers["content-type"] == "audio/mpeg"
     assert len(response.content) > 100
+

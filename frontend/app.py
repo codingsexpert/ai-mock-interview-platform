@@ -43,7 +43,7 @@ def check_backend_health():
 
 # Session State Initialization
 if "app_mode" not in st.session_state:
-    st.session_state.app_mode = "setup"  # "setup" | "interview" | "report"
+    st.session_state.app_mode = "setup"  # "setup" | "interview" | "report" | "history"
 if "resume_data" not in st.session_state:
     st.session_state.resume_data = None
 if "interview_plan" not in st.session_state:
@@ -58,24 +58,39 @@ if "current_audio_bytes" not in st.session_state:
     st.session_state.current_audio_bytes = None
 if "last_voiced_question" not in st.session_state:
     st.session_state.last_voiced_question = None
+if "view_history_session_id" not in st.session_state:
+    st.session_state.view_history_session_id = None
 
 # Header Bar
 is_healthy, _ = check_backend_health()
 
-col_title, col_status = st.columns([4, 1])
+col_title, col_nav, col_status = st.columns([3, 2, 1])
 with col_title:
     st.title("AI Mock Interview Platform")
     st.caption("Autonomous multi-agent technical interview simulation and performance evaluation")
 
+with col_nav:
+    st.markdown('<div style="padding-top: 1rem;">', unsafe_allow_html=True)
+    c_n1, c_n2 = st.columns(2)
+    with c_n1:
+        if st.button("Intake & Setup", use_container_width=True, type="primary" if st.session_state.app_mode == "setup" else "secondary"):
+            st.session_state.app_mode = "setup"
+            st.rerun()
+    with c_n2:
+        if st.button("Past History", use_container_width=True, type="primary" if st.session_state.app_mode == "history" else "secondary"):
+            st.session_state.app_mode = "history"
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
 with col_status:
     if is_healthy:
         st.markdown(
-            '<div style="text-align: right; padding-top: 1rem;"><span class="status-badge" style="border-color: #059669; color: #34d399;">System Online</span></div>',
+            '<div style="text-align: right; padding-top: 1.2rem;"><span class="status-badge" style="border-color: #059669; color: #34d399;">System Online</span></div>',
             unsafe_allow_html=True,
         )
     else:
         st.markdown(
-            '<div style="text-align: right; padding-top: 1rem;"><span class="status-badge" style="border-color: #dc2626; color: #f87171;">System Offline</span></div>',
+            '<div style="text-align: right; padding-top: 1.2rem;"><span class="status-badge" style="border-color: #dc2626; color: #f87171;">System Offline</span></div>',
             unsafe_allow_html=True,
         )
 
@@ -449,3 +464,51 @@ elif st.session_state.app_mode == "report":
             st.session_state.current_audio_bytes = None
             st.session_state.last_voiced_question = None
             st.rerun()
+
+# ==========================================
+# MODE 4: INTERVIEW HISTORY & PAST SCORECARDS
+# ==========================================
+elif st.session_state.app_mode == "history":
+    st.subheader("Historical Assessment Ledger")
+    with st.spinner("Loading interview records from database..."):
+        try:
+            hist_res = requests.get(f"{BACKEND_API_BASE}/api/v1/interview/history", timeout=5)
+            records = hist_res.json() if hist_res.status_code == 200 else []
+        except Exception as e:
+            records = []
+            st.error(f"Failed to query database: {str(e)}")
+
+    if records:
+        st.markdown(f"**Total Recorded Sessions:** `{len(records)}`")
+        st.markdown("---")
+        for rec in records:
+            with st.container():
+                h_col1, h_col2, h_col3, h_col4 = st.columns([3, 2, 2, 2])
+                with h_col1:
+                    st.markdown(f"**{rec['target_role']}**")
+                    created_date = rec.get("created_at")[:10] if rec.get("created_at") else "N/A"
+                    st.caption(f"Session: `{rec['session_id'][:8]}...` | Date: {created_date}")
+                with h_col2:
+                    score = rec.get("composite_score")
+                    st.markdown(f"Composite: **{score if score is not None else 'In-Progress'}**")
+                    st.caption(f"Progress: {rec['completed_turns']} of {rec['total_turns']} turns")
+                with h_col3:
+                    t_score = rec.get("technical_score")
+                    c_score = rec.get("communication_score")
+                    if t_score is not None:
+                        st.caption(f"Technical: {t_score}/10\nClarity: {c_score}/10")
+                    else:
+                        st.caption("Awaiting completion")
+                with h_col4:
+                    if st.button("Review Report", key=f"btn_hist_{rec['session_id']}", use_container_width=True):
+                        st.session_state.active_session = {
+                            "session_id": rec["session_id"],
+                            "target_role": rec["target_role"],
+                            "max_turns": rec["total_turns"],
+                            "current_phase": "completed",
+                        }
+                        st.session_state.app_mode = "report"
+                        st.rerun()
+                st.markdown("---")
+    else:
+        st.info("No recorded interview sessions in database yet. Launch your first session to build your assessment history.")

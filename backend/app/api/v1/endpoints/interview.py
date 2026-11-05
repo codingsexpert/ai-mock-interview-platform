@@ -65,6 +65,7 @@ async def start_interview_session(request: SessionStartRequest):
             "timestamp": now,
         })
         session_store.update_session(state["session_id"], state)
+        await session_store.persist_session_to_db(state)
 
         return SessionStartResponse(
             session_id=state["session_id"],
@@ -137,6 +138,7 @@ async def process_interview_turn(request: TurnRequest):
     })
 
     session_store.update_session(request.session_id, state)
+    await session_store.persist_session_to_db(state)
 
     return TurnResponse(
         session_id=request.session_id,
@@ -145,6 +147,17 @@ async def process_interview_turn(request: TurnRequest):
         interviewer_question=next_question,
         is_completed=is_completed,
     )
+
+
+@router.get(
+    "/history",
+    status_code=status.HTTP_200_OK,
+    summary="Get Historical Interview Sessions",
+)
+async def get_interview_history():
+    """Retrieve list of all past mock interview sessions and scoring summaries."""
+    history = await session_store.get_history_from_db()
+    return history
 
 
 @router.get(

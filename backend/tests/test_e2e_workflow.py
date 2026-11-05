@@ -108,3 +108,4 @@ def test_full_candidate_lifecycle_simulation():
 
     # Total messages: 1 opening + 5 user answers + 5 assistant responses = 11 messages
     assert len(final_state["messages"]) == 11
+

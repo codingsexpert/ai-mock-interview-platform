@@ -126,3 +126,4 @@ def generate_pdf_report(session_id: str, target_role: str, evaluations: List[Dic
     doc.build(story)
     buffer.seek(0)
     return buffer.getvalue()
+

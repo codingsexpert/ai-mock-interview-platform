@@ -31,3 +31,4 @@ def test_pdf_report_download():
     assert pdf_res.headers["content-type"] == "application/pdf"
     assert len(pdf_res.content) > 500
     assert pdf_res.content.startswith(b"%PDF")
+
