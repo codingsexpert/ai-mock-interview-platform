@@ -10,3 +10,4 @@ st.set_page_config(
 st.title("AI Mock Interview Platform")
 st.caption("Autonomous multi-agent technical interview simulation")
 st.markdown("---")
+
